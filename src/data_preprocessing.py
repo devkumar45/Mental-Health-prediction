@@ -81,9 +81,7 @@ def preprocess_and_save(df, scaler_path="models/scaler.pkl", le_path="models/lab
     return X_scaled, y, le, scaler
 
 
-# =====================================================
-# 🚀 Step 3: Execute when run directly
-# =====================================================
+
 if __name__ == "__main__":
     try:
         print("\n🧠 Running Mental Health Data Preprocessing...\n")
