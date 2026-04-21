@@ -113,7 +113,7 @@ if page == "🌟 Home":
             """)
 
     with c2:
-        st.image("https://img.freepik.com/free-vector/mental-health-concept-illustration_114360-2037.jpg", use_column_width=True)
+        st.image("https://img.freepik.com/free-vector/mental-health-concept-illustration_114360-2037.jpg")
         st.markdown("""
         <div style='padding:18px; background:rgba(255,255,255,0.5); border-radius:12px; margin-top:15px;'>
         <b>Need Help?</b><br>
@@ -141,7 +141,7 @@ elif page == "💡 Tips":
         - Balanced meals and hydration help battle stress.
         - Connect with friends, family, or support groups regularly.
     """)
-    st.image("https://img.freepik.com/free-vector/wellness-concept-illustration_114360-6697.jpg", use_column_width=True)
+    st.image("https://img.freepik.com/free-vector/wellness-concept-illustration_114360-6697.jpg")
 
 elif page == "🗣️ Feedback":
     st.header("🤔 Share Your Feedback")
