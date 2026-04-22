@@ -4,6 +4,10 @@ import pandas as pd
 import joblib
 import os
 import plotly.graph_objects as go
+from dotenv import load_dotenv
+from google import genai
+
+load_dotenv()
 
 # ─── Page config MUST be first Streamlit call ───────────────────────────────
 st.set_page_config(
@@ -300,7 +304,7 @@ with st.sidebar:
 
     page = st.radio(
         "Navigate",
-        ["🌟 Home", "📊 Analytics", "💡 Tips", "🗣️ Feedback"],
+        ["🌟 Home", "📊 Analytics", "💡 Tips", "💬 AI Chat", "🗣️ Feedback"],
         label_visibility="collapsed",
     )
 
@@ -843,6 +847,58 @@ elif page == "💡 Tips":
         unsafe_allow_html=True,
     )
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGE: AI CHAT
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "💬 AI Chat":
+    st.markdown("<div class='section-label'>Your AI Companion</div>", unsafe_allow_html=True)
+    st.markdown("<div class='hero-title' style='font-size:1.9rem;'>Mental Wellness Chatbot</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div class='hero-subtitle'>Chat with our AI companion for advice, resources, or just to talk.</div>",
+        unsafe_allow_html=True,
+    )
+
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        st.error("⚠️ GEMINI_API_KEY is not set. Please set it in your .env file to use the chatbot.")
+    else:
+        # Display chat history
+        for message in st.session_state.chat_history:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+        # Chat input
+        if prompt := st.chat_input("How are you feeling today?"):
+            # Add user message to history
+            st.session_state.chat_history.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            # Generate and display response
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                try:
+                    client = genai.Client(api_key=api_key)
+                    # Create prompt incorporating history
+                    history_text = "\\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.chat_history])
+                    full_prompt = f"You are a helpful and empathetic mental wellness assistant. Respond to the user's latest message based on the conversation history.\\n\\nHistory:\\n{history_text}\\n\\nassistant: "
+                    
+                    response = client.models.generate_content(
+                        model="gemini-3-flash-preview",
+                        contents=full_prompt
+                    )
+                    
+                    if response.text:
+                        message_placeholder.markdown(response.text)
+                        st.session_state.chat_history.append({"role": "assistant", "content": response.text})
+                    else:
+                        message_placeholder.markdown("*(No response received)*")
+                except Exception as e:
+                    st.error(f"Error generating response: {e}")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE: FEEDBACK
